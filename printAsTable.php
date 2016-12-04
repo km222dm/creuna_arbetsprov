@@ -1,127 +1,110 @@
 <?php
-$username = "root";
-$password = "root";
-$database = "food";
-$hostname = "localhost";
-$connect = mysqli_connect($hostname, $username, $password, $database);
+include 'handleDataBase.php';
 
 
-if($connect === false){
+class printAsTable {
 
-    die("<p>" . "ERROR: Could not connect. " . mysqli_connect_error(). "</p>");
+    function deleteTableRow() {
 
-}
+        $deleteInstance = new handleDataBase();
 
-if(isset($_POST['delete'])){
+        if ($deleteInstance->connectToDataBase() === false) {
 
-    $sql = "DELETE FROM deserts WHERE desert_name =" . "'" . $_POST['delete'] . "'";
+            die("<p>" . "ERROR: Could not connect. " . mysqli_connect_error() . "</p>");
+        }
 
 
-    if(mysqli_query($connect, $sql)){
+        if (isset($_POST['delete'])) {
 
-        echo "<p>" . "Records were deleted successfully." . "</p>";
+            if ($deleteInstance->deleteTables()) {
 
-    } else{
+                echo "<p>" . "Records were deleted successfully." . "</p>";
 
-        echo "<p>" . "ERROR: Could not able to execute $sql. " . mysqli_error($connect) . "</p>";
+            } else {
 
+                echo "<p>" . "ERROR: Could not able to execute delete. " . "</p>";
+
+            }
+        }
     }
-}
-
-?>
-
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-
-    <title>Table</title>
-
-</head>
-
-<body>
 
 
-<?php
+    function printTable() {
 
-$sql_select_deserts = "SELECT * FROM deserts";
+        if (isset($_POST['delete'])) {
 
-if($result = mysqli_query($connect, $sql_select_deserts)){
+            $this->deleteTableRow();
+        }
 
-    if(mysqli_num_rows($result) > 0){
+        $createDataBaseInstance = new handleDataBase();
 
-        echo "<table>";
+        $result = $createDataBaseInstance->getTables();
 
-        echo "<tr>";
+        if (mysqli_num_rows($result) > 0) {
 
-        echo "<th>Date</th>";
-
-        echo "<th>Name</th>";
-
-        echo "<th>Preamle</th>";
-
-        echo "<th>Type</th>";
-
-        echo "<th>Price</th>";
-
-        echo "<th>Calories</th>";
-
-        echo "<th>Url</th>";
-
-        echo "<th>Select</th>";
-
-        echo "</tr>";
-
-        while($row = mysqli_fetch_array($result)){
+            echo "<table>";
 
             echo "<tr>";
 
-            echo "<td>" . $row['desert_date'] . "</td>";
+            echo "<th>Date</th>";
 
-            echo "<td>" . $row['desert_name'] . "</td>";
+            echo "<th>Name</th>";
 
-            echo "<td>" . $row['desert_preamble'] . "</td>";
+            echo "<th>Preamle</th>";
 
-            echo "<td>" . $row['desert_type'] . "</td>";
+            echo "<th>Type</th>";
 
-            echo "<td>" . abs($row['desert_price']) . "</td>";
+            echo "<th>Price</th>";
 
-            echo "<td>" . $row['desert_calories'] . "</td>";
+            echo "<th>Calories</th>";
 
-            echo "<td>" . $row['desert_url'] . "</td>";
+            echo "<th>Url</th>";
 
-            echo "<td>" . '<form action="" method="post"><input type="hidden" name="delete" value="'. $row['desert_name'] .'"><input name="deleteButton" value="Delete row" type="submit"></form>' . "</td>";
+            echo "<th>Select</th>";
 
             echo "</tr>";
 
+            while ($row = mysqli_fetch_array($result)) {
+
+                echo "<tr>";
+
+                echo "<td>" . $row['desert_date'] . "</td>";
+
+                echo "<td>" . $row['desert_name'] . "</td>";
+
+                echo "<td>" . $row['desert_preamble'] . "</td>";
+
+                echo "<td>" . $row['desert_type'] . "</td>";
+
+                echo "<td>" . abs($row['desert_price']) . "</td>";
+
+                echo "<td>" . $row['desert_calories'] . "</td>";
+
+                echo "<td>" . $row['desert_url'] . "</td>";
+
+                echo "<td>" . '<form action="" method="post"><input type="hidden" name="delete" value="' . $row['desert_name'] . '"><input name="deleteButton" value="Delete row" type="submit"></form>' . "</td>";
+
+                echo "</tr>";
+
+            }
+
+            echo "</table>";
+
+            mysqli_free_result($result);
+
+
+        } else {
+
+            echo "<p>" . "No records matching your query were found." . "</p>";
         }
-
-        echo "</table>";
-
-
-        mysqli_free_result($result);
-
-
-
-    } else{
-
-        echo "<p>" . "No records matching your query were found.". "</p>";
-
     }
-
-} else{
-
-    echo "<p>" ."ERROR: Could not able to execute $sql_select_deserts. " . mysqli_error($connect). "</p>";
-
 }
 
+$printAsTableInstance = new printAsTable();
 
-mysqli_close($connect);
+$printAsTableInstance->printTable();
 
 ?>
 
-
-<p><a href="/index.php">Go to start page</a></p>
+<p><a href="/frontpage.html">Go to start page</a></p>
 <p><a href="/printAsXml.php">Present as XML</a></p>
-
-</body>
-</html>

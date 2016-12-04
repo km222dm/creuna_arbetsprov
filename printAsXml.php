@@ -1,58 +1,63 @@
 <?php
-header('Content-Type: text/xml');
-
-$username = "root";
-$password = "root";
-$database = "food";
-$hostname = "localhost";
-$connect = mysqli_connect($hostname, $username, $password, $database);
-
-if($connect === false){
-
-    die("ERROR: Could not connect. " . mysqli_connect_error());
-
-}
-
 include 'desertXml.php';
 
-$food = new SimpleXMLElement($xmlString);
+class printAsXmlClass {
 
+    function printXml() {
 
-$sql_select_deserts = "SELECT * FROM deserts";
+        $username = "root";
+        $password = "root";
+        $database = "food";
+        $hostname = "localhost";
+        $connect = mysqli_connect($hostname, $username, $password, $database);
 
-if($result = mysqli_query($connect, $sql_select_deserts)) {
+        if($connect === false){
 
-    if(mysqli_num_rows($result) > 0) {
-
-        while($row = mysqli_fetch_array($result)){
-
-            $desert = $food->addChild('desert');
-            $desert->addChild('date', $row['desert_date']);
-            $desert->addChild('name', $row['desert_name']);
-            $desert->addChild('preamble', $row['desert_preamble']);
-            $desert->addChild('type', $row['desert_type']);
-            $desert->addChild('price', $row['desert_price']);
-            $desert->addChild('calories', $row['desert_calories']);
-            $desert->addChild('url', $row['desert_url']);
-
+            die("ERROR: Could not connect. " . mysqli_connect_error());
         }
 
-        mysqli_free_result($result);
+        global $xmlString;
 
-    } else{
+        $food = new SimpleXMLElement($xmlString);
 
-        echo "<p>" ."No records matching your query were found." . "</p>";
+
+        $sql_select_deserts = "SELECT * FROM deserts";
+
+        if($result = mysqli_query($connect, $sql_select_deserts)) {
+
+            if(mysqli_num_rows($result) > 0) {
+
+                while($row = mysqli_fetch_array($result)) {
+
+                    $desert = $food->addChild('desert');
+                    $desert->addChild('date', $row['desert_date']);
+                    $desert->addChild('name', $row['desert_name']);
+                    $desert->addChild('preamble', $row['desert_preamble']);
+                    $desert->addChild('type', $row['desert_type']);
+                    $desert->addChild('price', $row['desert_price']);
+                    $desert->addChild('calories', $row['desert_calories']);
+                    $desert->addChild('url', $row['desert_url']);
+                }
+
+                mysqli_free_result($result);
+
+            } else{
+
+                echo "<p>" ."No records matching your query were found." . "</p>";
+            }
+
+        } else{
+
+            echo "<p>" ."ERROR: Could not able to execute $sql_select_deserts. " . mysqli_error($connect). "</p>";
+        }
+
+        echo $food->asXML();
 
     }
-
-} else{
-
-    echo "<p>" ."ERROR: Could not able to execute $sql_select_deserts. " . mysqli_error($connect). "</p>";
-
 }
 
-echo $food->asXML();
+$printAsXmlInstance = new printAsXmlClass();
 
-mysqli_close($connect);
+$printAsXmlInstance->printXml();
 
 ?>

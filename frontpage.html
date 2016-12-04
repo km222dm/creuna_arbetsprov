@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Frontpage</title>
+
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+</head>
+<body>
+
+<h1>Desert generator</h1>
+
+<form action="createInstance.php" method="post">
+    Date:     <input type="text" name="date" id="datePicker"><br />
+    Name:     <input type="text" name="name" /><br />
+    Preamble: <input type="text" name="preamble" /><br />
+    Type:     <input type="text" name="type" /><br />
+    Price:    <input type="number" min="0" step="any" name="price" /><br />
+    Calories: <input type="number" min="0" name="calories" /><br />
+    Url:      <input type="url" name="url" /><br />
+
+    <input type="submit" name="submitAsTable" value="Submit" />
+</form>
+
+
+<script src="datePicker.js"></script>
+</body>
+</html>
